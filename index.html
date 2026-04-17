@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Store | Catálogo Premium de Productos</title>
+    <meta name="description" content="Zenith Store: Descubre nuestra colección exclusiva de tecnología y accesorios premium. Calidad superior, diseño minimalista y envíos rápidos.">
+    <meta name="keywords" content="tecnología, accesorios, premium, zenith store, gadgets, perú, compra por whatsapp">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zenithstore.pe/">
+    <meta property="og:title" content="Zenith Store | Catálogo Premium de Productos">
+    <meta property="og:description" content="Descubre nuestra colección exclusiva de tecnología y accesorios premium.">
+    <meta property="og:image" content="https://zenithstore.pe/assets/images/headphones.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Zenith Store | Catálogo Premium de Productos">
+    <meta property="twitter:description" content="Descubre nuestra colección exclusiva de tecnología y accesorios premium.">
+    
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                ZENITH<span>STORE</span>
+            </a>
+        </div>
+        <div>
+            <i class="fas fa-shopping-cart" style="color: var(--text-muted)"></i>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="header-section">
+            <h1>Explora nuestra colección</h1>
+            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto;">Productos seleccionados con los más altos estándares de calidad y diseño.</p>
+        </header>
+
+        <section class="controls-wrapper">
+            <div class="search-field">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="¿Qué estás buscando?">
+            </div>
+            
+            <div class="filter-scroll" id="categoryFilters">
+                <button class="filter-chip active" data-category="Todos">Todos</button>
+                <button class="filter-chip" data-category="Tecnología">Tecnología</button>
+                <button class="filter-chip" data-category="Accesorios">Accesorios</button>
+            </div>
+        </section>
+
+        <div class="grid" id="productGrid">
+            <!-- Cargando... -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Catálogo</a>
+            <a href="privacidad.html">Privacidad</a>
+            <a href="terminos.html">Términos</a>
+            <a href="contacto.html">Contacto</a>
+        </div>
+        <p class="copyright">&copy; 2026 Zenith Store Perú. Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
