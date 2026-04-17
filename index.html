@@ -9,16 +9,12 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://zenithstore.pe/">
+    <meta property="og:url" content="https://plumas1924.pe/">
     <meta property="og:title" content="Plumas 1924 | Catálogo Premium de Productos">
     <meta property="og:description" content="Descubre nuestra colección exclusiva de oficina y juguetes premium.">
-    <meta property="og:image" content="https://zenithstore.pe/assets/images/headphones.png">
+    <meta property="og:image" content="https://plumas1924.pe/assets/images/preview.png">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Plumas 1924 | Catálogo Premium de Productos">
-    <meta property="twitter:description" content="Descubre nuestra colección exclusiva de oficina y juguetes premium.">
-    
+    <!-- Styles -->
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -30,43 +26,67 @@
                 PLUMAS<span>1924</span>
             </a>
         </div>
-        <div>
-            <i class="fas fa-shopping-cart" style="color: var(--text-muted)"></i>
+        <div class="cart-icon">
+            <i class="fas fa-shopping-bag"></i>
         </div>
     </nav>
 
-    <main class="container fade-in">
-        <header class="header-section">
-            <h1>Explora nuestra colección</h1>
-            <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto;">Productos seleccionados con los más altos estándares de calidad y diseño.</p>
-        </header>
+    <header class="hero container fade-in">
+        <div class="hero-badge">
+            <i class="fas fa-sparkles"></i> Colección 2026 Reservada
+        </div>
+        <h1>Elevando lo cotidiano a <br><span>Extraordinario</span></h1>
+        <p>Una selección curada de artículos de oficina y juguetes de edición limitada, diseñados para quienes valoran la excelencia en cada detalle.</p>
+    </header>
 
+    <main class="container fade-in">
         <section class="controls-wrapper">
             <div class="search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="¿Qué estás buscando?">
+                <input type="text" id="searchInput" placeholder="Buscar en la colección...">
             </div>
             
             <div class="filter-scroll" id="categoryFilters">
-                <button class="filter-chip active" data-category="Todos">Todos</button>
-                <button class="filter-chip" data-category="oficina">Oficina</button>
-                <button class="filter-chip" data-category="juguetes">Juguetes</button>
+                <button class="filter-chip active" data-category="Todos">Ver Todos</button>
+                <button class="filter-chip" data-category="oficina">Artículos de Oficina</button>
+                <button class="filter-chip" data-category="juguetes">Colección Juguetes</button>
             </div>
         </section>
 
         <div class="grid" id="productGrid">
-            <!-- Cargando... -->
+            <!-- Los productos se cargan dinámicamente -->
         </div>
     </main>
 
     <footer>
-        <div class="footer-links">
-            <a href="index.html">Catálogo</a>
-            <a href="privacidad.html">Privacidad</a>
-            <a href="terminos.html">Términos</a>
-            <a href="contacto.html">Contacto</a>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h2>PLUMAS<span>1924</span></h2>
+                    <p>La elegancia en la escritura y el juego. Envíos exclusivos a todo el Perú.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Explorar</h3>
+                    <a href="index.html">Catálogo Completo</a>
+                    <a href="#categoryFilters">Categorías</a>
+                    <a href="contacto.html">Contacto Directo</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Legal</h3>
+                    <a href="privacidad.html">Privacidad</a>
+                    <a href="terminos.html">Términos de Servicio</a>
+                    <a href="terminos.html">Políticas de Envío</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Soporte</h3>
+                    <a href="https://wa.me/51992719569">WhatsApp Business</a>
+                    <a href="mailto:info@plumas1924.pe">info@plumas1924.pe</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Plumas 1924 Perú. Todos los derechos reservados. Diseñado para la excelencia.</p>
+            </div>
         </div>
-        <p class="copyright">&copy; 2026 Plumas 1924 Perú. Todos los derechos reservados.</p>
     </footer>
 
     <script src="assets/js/app.js"></script>

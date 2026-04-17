@@ -119,9 +119,7 @@ async function initIndexPage() {
         productGrid.innerHTML = filtered.map(p => {
             const hasStock = p.stock > 0;
             return `
-                <div class="card ${!hasStock ? 'out-of-stock' : ''}" 
-                     onclick="${hasStock ? `window.location.href='producto.html?id=${p.id}'` : ''}"
-                     style="cursor: ${hasStock ? 'pointer' : 'default'}">
+                <a href="${hasStock ? `producto.html?id=${p.id}` : '#'}" class="card ${!hasStock ? 'out-of-stock' : ''}">
                     <div class="card-img skeleton">
                         <img src="${p.imagenThumb}" alt="${p.nombre}" loading="lazy" onload="this.parentElement.classList.remove('skeleton')">
                         ${!hasStock ? '<div class="stock-badge">Agotado</div>' : ''}
@@ -129,12 +127,14 @@ async function initIndexPage() {
                     <div class="card-body">
                         <span class="card-tag">${p.categoria}</span>
                         <h3 class="card-title">${p.nombre}</h3>
-                        <div class="card-price">
-                            ${CONFIG.CURRENCY}${Number(p.precio).toFixed(2)}
-                            ${hasStock ? `<span class="stock-info">${p.stock} disp.</span>` : ''}
+                        <div class="card-price-row">
+                            <span class="card-price">${CONFIG.CURRENCY}${Number(p.precio).toFixed(2)}</span>
+                            <div class="card-btn-view">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             `;
         }).join('');
     };
