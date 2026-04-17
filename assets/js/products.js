@@ -1,10 +1,10 @@
 const CONFIG = {
-    // REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT LUEGO DE IMPLEMENTAR
-    API_URL: "https://script.google.com/macros/s/AKfycbxUSSGHztdZV5BEJk-MjDIWJzMMsQ4Itr0r7pukn1knC6vNy2YGqHE3bMyX0NkH37_S/exec", 
+    API_URL: "https://script.google.com/macros/s/AKfycbzf3V3axfMLC7kIdUNe0mzGGB0yQgo7tEmODsV1PSSLtiWBDVAKRdlCLZ7VV8deTXHu/exec", 
     WHATSAPP_NUMBER: "51992719569",
     CURRENCY: "S/ ",
-    STORE_NAME: "Plumas 1924",
-    POLLING_INTERVAL: 30000 // 30 segundos
+    STORE_NAME: "DBStore",
+    POLLING_INTERVAL: 30000 
 };
 
 export { CONFIG };
+

@@ -1,10 +1,10 @@
 // Configuración integrada para evitar problemas de importación en local
 const CONFIG = {
-    API_URL: "https://script.google.com/macros/s/AKfycbxUSSGHztdZV5BEJk-MjDIWJzMMsQ4Itr0r7pukn1knC6vNy2YGqHE3bMyX0NkH37_S/exec", 
+    API_URL: "https://script.google.com/macros/s/AKfycbzf3V3axfMLC7kIdUNe0mzGGB0yQgo7tEmODsV1PSSLtiWBDVAKRdlCLZ7VV8deTXHu/exec", 
     WHATSAPP_NUMBER: "51992719569",
     CURRENCY: "S/ ",
     STORE_NAME: "DBStore",
-    POLLING_INTERVAL: 60000 
+    POLLING_INTERVAL: 30000 // Reducido a 30s para sincronización más rápida
 };
 
 let allProducts = [];
@@ -13,7 +13,6 @@ let cart = JSON.parse(localStorage.getItem('dbstore_cart')) || [];
 // Helper para optimizar imágenes con Fallback robusto
 const optimizeImg = (url, width = 600) => {
     if (!url) return 'https://placehold.co/600x600/f1f5f9/0f172a?text=Sin+Imagen';
-    // Proxy para WebP y Redimensión, pero devolvemos una promesa de carga o manejamos error en el DOM
     return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=85`;
 };
 
@@ -29,22 +28,28 @@ async function initApp() {
     updateCartUI();
     setupCartListeners();
 
-    // Intentar recuperar de cache inmediatamente
+    // Intentar recuperar de cache inmediatamente para velocidad
     const cached = sessionStorage.getItem('dbstore_cache');
     if (cached) {
         allProducts = JSON.parse(cached);
-        if (productGrid) renderProducts(allProducts);
+        if (productGrid) {
+            renderProducts(allProducts);
+            initIndexPage();
+        }
         if (detailContainer) initDetailPage();
     }
 
-    // Fetch fresco
+    // Fetch fresco y configurar polling
     await fetchProducts(true);
     
-    // Inicializar Tabs si estamos en detalle
+    if (productGrid) initIndexPage();
     if (detailContainer) {
         setupTabs();
         initDetailPage();
     }
+
+    // Polling para mantener stock actualizado
+    setInterval(() => fetchProducts(true), CONFIG.POLLING_INTERVAL);
 }
 
 function setupTabs() {
@@ -73,23 +78,34 @@ async function fetchProducts(force = false) {
         
         const data = await response.json();
         
-        if (data && data.ok && Array.isArray(data.products)) {
-            allProducts = data.products.map(p => ({
+        // Manejar tanto formato de objeto {products:[]} como array directo []
+        const productsRaw = Array.isArray(data) ? data : (data.products || []);
+        
+        if (productsRaw.length > 0) {
+            allProducts = productsRaw.map(p => ({
                 ...p,
-                id: p.Id,
+                id: p.id || p.Id,
                 nombre: p.nombre || 'Producto Sin Nombre',
-                descripcion: p.descipcion || p.descripcion || 'Sin descripción disponible.',
+                categoria: p.categoria || 'General',
+                descripcion: p.descripcion || p.descipcion || 'Sin descripción disponible.',
                 imagenOriginal: p.imagen,
                 imagenOptimized: optimizeImg(p.imagen, 800),
                 imagenThumb: optimizeImg(p.imagen, 400),
                 precio: parseFloat(p.precio) || 0,
                 stock: parseInt(p.stock) || 0,
-                // Nuevos campos para DBStore profesional
                 caracteristicas: p.caracteristicas || '', 
                 especificaciones: p.especificaciones || ''
             }));
             
             sessionStorage.setItem('dbstore_cache', JSON.stringify(allProducts));
+            
+            // Re-renderizar solo si estamos en la cuadrícula de productos
+            if (document.getElementById('productGrid')) {
+                const searchInput = document.getElementById('searchInput');
+                if (!searchInput || !searchInput.value) {
+                    renderProducts(allProducts);
+                }
+            }
             return allProducts;
         }
     } catch (error) {
@@ -109,10 +125,65 @@ function setupCartListeners() {
     closeCart?.addEventListener('click', () => toggleCart(false));
     cartOverlay?.addEventListener('click', () => toggleCart(false));
 
-    checkoutBtn?.addEventListener('click', () => {
+    checkoutBtn?.addEventListener('click', async () => {
         if (cart.length === 0) return alert('Tu carrito está vacío');
-        checkoutWhatsApp();
+        
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        
+        try {
+            await checkoutFlow();
+        } catch (err) {
+            console.error(err);
+            alert('Hubo un error al procesar el pedido. Intente nuevamente.');
+        } finally {
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Finalizar Pedido';
+        }
     });
+}
+
+async function checkoutFlow() {
+    // 1. Registrar en Google Sheets antes de WhatsApp
+    for (const item of cart) {
+        await registerOrderInSheet(item);
+    }
+    
+    // 2. Abrir WhatsApp
+    checkoutWhatsApp();
+    
+    // 3. Limpiar carrito (opcional, mejor después de confirmar que se abrió WhatsApp)
+    // cart = [];
+    // saveCart();
+    // updateCartUI();
+    // toggleCart(false);
+}
+
+async function registerOrderInSheet(item) {
+    try {
+        const orderData = {
+            productId: item.id,
+            productName: item.nombre,
+            price: item.precio,
+            quantity: item.quantity,
+            customerName: 'Cliente Web',
+            customerPhone: ''
+        };
+
+        await fetch(CONFIG.API_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Importante para Google Apps Script POST
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+        
+        return true;
+    } catch (error) {
+        console.error('Error registrando pedido:', error);
+        return false;
+    }
 }
 
 function toggleCart(open) {
@@ -248,12 +319,14 @@ function initIndexPage() {
     const searchInput = document.getElementById('searchInput');
     const filterButtons = document.querySelectorAll('.filter-chip');
     
+    if (!searchInput) return;
+
     let currentFilter = 'Todos';
     let currentSearch = '';
 
     const render = () => {
         const filtered = allProducts.filter(p => {
-            const matchesCategory = currentFilter === 'Todos' || p.categoria.toLowerCase().includes(currentFilter.toLowerCase()) || p.categoria === currentFilter;
+            const matchesCategory = currentFilter === 'Todos' || (p.categoria && p.categoria.toLowerCase().includes(currentFilter.toLowerCase()));
             const matchesSearch = p.nombre.toLowerCase().includes(currentSearch.toLowerCase()) || 
                                  p.descripcion.toLowerCase().includes(currentSearch.toLowerCase());
             return matchesCategory && matchesSearch;
@@ -261,18 +334,18 @@ function initIndexPage() {
         renderProducts(filtered);
     };
 
-    searchInput?.addEventListener('input', (e) => {
+    searchInput.oninput = (e) => {
         currentSearch = e.target.value;
         render();
-    });
+    };
 
     filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
             filterButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilter = btn.dataset.category;
             render();
-        });
+        };
     });
 }
 
@@ -318,8 +391,36 @@ async function initDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
 
-    if (allProducts.length === 0) await fetchProducts();
-    const product = allProducts.find(p => String(p.id) === String(productId));
+    if (!productId) return;
+
+    // Intentar buscar en local primero
+    let product = allProducts.find(p => String(p.id) === String(productId));
+
+    // Si no está, pedir solo ese producto al servidor (más eficiente)
+    if (!product) {
+        try {
+            const resp = await fetch(`${CONFIG.API_URL}?action=product&id=${productId}`);
+            const data = await resp.json();
+            if (data && !data.error) {
+                product = {
+                    ...data,
+                    id: data.id || data.Id,
+                    nombre: data.nombre || 'Producto Sin Nombre',
+                    categoria: data.categoria || 'General',
+                    descripcion: data.descripcion || data.descipcion || 'Sin descripción disponible.',
+                    imagenOriginal: data.imagen,
+                    imagenOptimized: optimizeImg(data.imagen, 800),
+                    imagenThumb: optimizeImg(data.imagen, 400),
+                    precio: parseFloat(data.precio) || 0,
+                    stock: parseInt(data.stock) || 0,
+                    caracteristicas: data.caracteristicas || '',
+                    especificaciones: data.especificaciones || ''
+                };
+            }
+        } catch (e) {
+            console.error("Error fetching single product", e);
+        }
+    }
 
     if (!product) {
         detailContainer.innerHTML = `<div class="empty-state"><h1>Producto no encontrado</h1><a href="index.html" class="filter-chip">Volver al inicio</a></div>`;
@@ -367,7 +468,6 @@ async function initDetailPage() {
         };
     }
 
-    // Renderizar Características y Specs
     renderFeatures(product.caracteristicas);
     renderSpecs(product.especificaciones);
 }
@@ -383,18 +483,15 @@ function renderFeatures(featuresText) {
         return;
     }
 
-    // Formato esperado: "Titulo|Desc||Titulo|Desc"
     const items = featuresText.split('||');
     container.innerHTML = items.map(item => {
-        const [title, desc] = item.split('|');
-        // Asignación de iconos básica
+        const part = item.split('|');
+        const title = part[0] || 'Información';
+        const desc = part[1] || '';
+        
         const iconMap = {
-            'calidad': 'fa-award',
-            'envio': 'fa-truck-fast',
-            'garantia': 'fa-shield-halved',
-            'tech': 'fa-microchip',
-            'ergonomia': 'fa-chair',
-            'bateria': 'fa-battery-full'
+            'calidad': 'fa-award', 'envio': 'fa-truck-fast', 'garantia': 'fa-shield-halved',
+            'tech': 'fa-microchip', 'ergonomia': 'fa-chair', 'bateria': 'fa-battery-full'
         };
         const iconClass = iconMap[title.toLowerCase().trim()] || 'fa-circle-check';
         
@@ -402,7 +499,7 @@ function renderFeatures(featuresText) {
             <div class="feature-item">
                 <i class="fas ${iconClass}"></i>
                 <h4>${title}</h4>
-                <p>${desc || ''}</p>
+                <p>${desc}</p>
             </div>
         `;
     }).join('');
@@ -419,15 +516,15 @@ function renderSpecs(specsText) {
         return;
     }
 
-    // Formato esperado: "Etiqueta|Valor||Etiqueta|Valor"
     const rows = specsText.split('||');
     container.innerHTML = rows.map(row => {
-        const [label, value] = row.split('|');
+        const part = row.split('|');
         return `
             <div class="specs-row">
-                <span class="spec-label">${label}</span>
-                <span class="spec-value">${value || '-'}</span>
+                <span class="spec-label">${part[0] || '-'}</span>
+                <span class="spec-value">${part[1] || '-'}</span>
             </div>
         `;
     }).join('');
 }
+
