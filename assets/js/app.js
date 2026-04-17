@@ -1,11 +1,31 @@
-import { CONFIG } from './products.js';
+// Configuración integrada para evitar problemas de importación en local
+const CONFIG = {
+    API_URL: "https://script.google.com/macros/s/AKfycbxUSSGHztdZV5BEJk-MjDIWJzMMsQ4Itr0r7pukn1knC6vNy2YGqHE3bMyX0NkH37_S/exec", 
+    WHATSAPP_NUMBER: "51992719569",
+    CURRENCY: "S/ ",
+    STORE_NAME: "Plumas 1924",
+    POLLING_INTERVAL: 60000 // Aumentado a 1 min para ahorrar recursos
+};
 
 let allProducts = [];
 let pollingInterval = null;
 
+// Helper para optimizar imágenes (Compresión y redimensión vía Proxy)
+const optimizeImg = (url, width = 400) => {
+    if (!url) return '';
+    // Usamos el proxy gratuito de weserv.nl para convertir a WebP y redimensionar
+    return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=80`;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
     const detailContainer = document.getElementById('detailContainer');
+
+    // Intentar recuperar de cache inmediatamente para velocidad instantánea
+    const cached = sessionStorage.getItem('plumas_cache');
+    if (cached) {
+        allProducts = JSON.parse(cached);
+    }
 
     if (productGrid) {
         initIndexPage();
@@ -15,16 +35,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /** -- API FETCHING -- **/
-async function fetchProducts() {
+async function fetchProducts(force = false) {
+    // Si tenemos cache y no es forzado, devolvemos cache
+    if (!force && allProducts.length > 0) return allProducts;
+
     try {
-        const response = await fetch(`${CONFIG.API_URL}?action=products`);
-        if (!response.ok) throw new Error('Error al cargar productos');
+        const response = await fetch(`${CONFIG.API_URL}?action=products`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const data = await response.json();
-        allProducts = data;
-        return data;
-    } catch (error) {
-        console.error('Fetch error:', error);
+        
+        if (data && data.ok && Array.isArray(data.products)) {
+            allProducts = data.products.map(p => ({
+                ...p,
+                id: p.Id,
+                descripcion: p.descipcion || p.descripcion || '',
+                // Guardamos la imagen original y la optimizada
+                imagenOptimized: optimizeImg(p.imagen, 500),
+                imagenThumb: optimizeImg(p.imagen, 300)
+            }));
+            
+            // Guardar en cache de sesión
+            sessionStorage.setItem('plumas_cache', JSON.stringify(allProducts));
+            return allProducts;
+        }
         return null;
+    } catch (error) {
+        console.error('Error fetch:', error);
+        return allProducts.length > 0 ? allProducts : null;
     }
 }
 
@@ -77,9 +119,11 @@ async function initIndexPage() {
         productGrid.innerHTML = filtered.map(p => {
             const hasStock = p.stock > 0;
             return `
-                <div class="card ${!hasStock ? 'out-of-stock' : ''}" onclick="${hasStock ? `window.location.href='producto.html?id=${p.id}'` : ''}">
-                    <div class="card-img">
-                        <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
+                <div class="card ${!hasStock ? 'out-of-stock' : ''}" 
+                     onclick="${hasStock ? `window.location.href='producto.html?id=${p.id}'` : ''}"
+                     style="cursor: ${hasStock ? 'pointer' : 'default'}">
+                    <div class="card-img skeleton">
+                        <img src="${p.imagenThumb}" alt="${p.nombre}" loading="lazy" onload="this.parentElement.classList.remove('skeleton')">
                         ${!hasStock ? '<div class="stock-badge">Agotado</div>' : ''}
                     </div>
                     <div class="card-body">
@@ -95,12 +139,25 @@ async function initIndexPage() {
         }).join('');
     };
 
-    // Carga inicial
-    productGrid.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando catálogo...</p></div>';
-    const products = await fetchProducts();
-    if (products) {
-        renderProducts(products);
+    // Carga inicial (Usar cache si existe para carga instantánea)
+    if (allProducts.length > 0) {
+        renderProducts(allProducts);
     } else {
+        productGrid.innerHTML = Array(6).fill(0).map(() => `
+            <div class="card">
+                <div class="card-img skeleton"></div>
+                <div class="card-body">
+                    <div class="skeleton" style="height:12px; width:40%; margin-bottom:8px;"></div>
+                    <div class="skeleton" style="height:20px; width:80%; margin-bottom:12px;"></div>
+                    <div class="skeleton" style="height:24px; width:30%;"></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    const products = await fetchProducts();
+    if (products) renderProducts(products);
+    else if (allProducts.length === 0) {
         productGrid.innerHTML = '<div class="empty-state"><p>Error al conectar con el servidor.</p></div>';
     }
 
@@ -152,8 +209,8 @@ async function initDetailPage() {
     const whatsappUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${whatsappMessage}`;
 
     detailContainer.innerHTML = `
-        <div class="detail-media">
-            <img src="${product.imagen}" alt="${product.nombre}">
+        <div class="detail-media skeleton">
+            <img src="${product.imagenOptimized}" alt="${product.nombre}" onload="this.parentElement.classList.remove('skeleton')">
         </div>
         <div class="detail-content">
             <span class="card-tag">${product.categoria}</span>
@@ -178,6 +235,4 @@ async function initDetailPage() {
             window.open(whatsappUrl, '_blank');
         };
     }
-}
-
 }
