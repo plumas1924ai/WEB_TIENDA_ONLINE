@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plumas 1924 | Catálogo Premium de Productos</title>
-    <meta name="description" content="Plumas 1924: Descubre nuestra colección exclusiva de oficina y juguetes. Calidad superior, diseño minimalista y envíos rápidos.">
-    <meta name="keywords" content="oficina, juguetes, premium, plumas 1924, gadgets, perú, compra por whatsapp">
+    <title>DBStore | Tecnología, Juguetes y Oficina</title>
+    <meta name="description" content="DBStore: Tecnología de vanguardia, sillas de escritorio ergonómicas y los mejores juguetes. Calidad premium y envíos a todo el Perú.">
+    <meta name="keywords" content="tecnología, sillas de escritorio, juguetes, gadgets, DBStore, perú, gaming">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -22,39 +22,68 @@
 
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit;">
-                PLUMAS<span>1924</span>
+            <a href="index.html" class="logo">
+                DB<span class="logo-font">STORE</span>
             </a>
         </div>
-        <div class="cart-icon">
-            <i class="fas fa-shopping-bag"></i>
+        <div class="nav-actions">
+            <div class="cart-icon" id="cartBtn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
         </div>
     </nav>
 
+    <!-- Shopping Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2>Tu Carrito</h2>
+            <i class="fas fa-times close-cart" id="closeCart"></i>
+        </div>
+        <div class="cart-body" id="cartItems">
+            <!-- Items inner JS -->
+            <div class="empty-state">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Tu carrito está vacío</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total Estimado</span>
+                <span id="cartTotal">S/ 0.00</span>
+            </div>
+            <button class="btn-whatsapp" id="checkoutBtn">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+            </button>
+        </div>
+    </div>
+
     <header class="hero container fade-in">
         <div class="hero-badge">
-            <i class="fas fa-sparkles"></i> Colección 2026 Reservada
+            <i class="fas fa-crown"></i> Selección Exclusiva 2026
         </div>
-        <h1>Elevando lo cotidiano a <br><span>Extraordinario</span></h1>
-        <p>Una selección curada de artículos de oficina y juguetes de edición limitada, diseñados para quienes valoran la excelencia en cada detalle.</p>
+        <h1>Innovación y Confort en <br><span>Tu Espacio</span></h1>
+        <p>Tu destino premium para tecnología de vanguardia, sillas ergonómicas y una colección exclusiva de juguetes y coleccionables.</p>
     </header>
 
     <main class="container fade-in">
         <section class="controls-wrapper">
             <div class="search-field">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar en la colección...">
+                <input type="text" id="searchInput" placeholder="¿Qué estás buscando hoy?">
             </div>
             
             <div class="filter-scroll" id="categoryFilters">
-                <button class="filter-chip active" data-category="Todos">Ver Todos</button>
-                <button class="filter-chip" data-category="oficina">Artículos de Oficina</button>
-                <button class="filter-chip" data-category="juguetes">Colección Juguetes</button>
+                <button class="filter-chip active" data-category="Todos">Ver Todo</button>
+                <button class="filter-chip" data-category="tecnologia">Tecnología</button>
+                <button class="filter-chip" data-category="sillas">Sillas de Escritorio</button>
+                <button class="filter-chip" data-category="juguetes">Juguetes y Más</button>
             </div>
         </section>
 
         <div class="grid" id="productGrid">
-            <!-- Los productos se cargan dinámicamente -->
+            <!-- Productos cargados vía app.js -->
         </div>
     </main>
 
@@ -62,29 +91,30 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h2>PLUMAS<span>1924</span></h2>
-                    <p>La elegancia en la escritura y el juego. Envíos exclusivos a todo el Perú.</p>
+                    <h2>DB<span>STORE</span></h2>
+                    <p>Líderes en tecnología, mobiliario ergonómico y diversión premium en todo el Perú.</p>
                 </div>
                 <div class="footer-col">
-                    <h3>Explorar</h3>
-                    <a href="index.html">Catálogo Completo</a>
-                    <a href="#categoryFilters">Categorías</a>
-                    <a href="contacto.html">Contacto Directo</a>
+                    <h3>Catálogo</h3>
+                    <a href="index.html">Novedades 2026</a>
+                    <a href="#">Tecnología Gamer</a>
+                    <a href="contacto.html">Soporte DBStore</a>
                 </div>
                 <div class="footer-col">
-                    <h3>Legal</h3>
+                    <h3>Ayuda</h3>
                     <a href="privacidad.html">Privacidad</a>
-                    <a href="terminos.html">Términos de Servicio</a>
-                    <a href="terminos.html">Políticas de Envío</a>
+                    <a href="terminos.html">Condiciones</a>
+                    <a href="terminos.html">Devoluciones</a>
                 </div>
                 <div class="footer-col">
-                    <h3>Soporte</h3>
-                    <a href="https://wa.me/51992719569">WhatsApp Business</a>
-                    <a href="mailto:info@plumas1924.pe">info@plumas1924.pe</a>
+                    <h3>Contacto</h3>
+                    <a href="https://wa.me/51992719569?text=Hola%20DBStore%2C%20deseo%20realizar%20una%20consulta%20general."><i class="fab fa-whatsapp"></i> +51 992 719 569</a>
+                    <a href="mailto:dsaicoar@gmail.com"><i class="fas fa-envelope"></i> dsaicoar@gmail.com</a>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-top: 1rem;">Lima, Perú</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Plumas 1924 Perú. Todos los derechos reservados. Diseñado para la excelencia.</p>
+                <p>&copy; 2026 DBStore Perú. Todos los derechos reservados. Innovation for Life.</p>
             </div>
         </div>
     </footer>

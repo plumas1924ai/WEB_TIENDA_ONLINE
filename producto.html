@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Producto | Plumas 1924</title>
+    <title>Producto | DBStore</title>
     <meta name="description" content="Detalle del producto en Plumas 1924. Explora especificaciones y compra directamente por WhatsApp.">
     
     <!-- Open Graph / Facebook -->
@@ -20,50 +20,90 @@
 
     <nav>
         <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit;">
-                PLUMAS<span>1924</span>
+            <a href="index.html" class="logo">
+                DB<span class="logo-font">STORE</span>
             </a>
         </div>
-        <div class="cart-icon">
-            <i class="fas fa-shopping-bag"></i>
+        <div class="nav-actions">
+            <div class="cart-icon" id="cartBtn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
         </div>
     </nav>
 
-    <main class="container fade-in" style="padding-top: 2rem;">
-        <a href="index.html" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Volver a la Colección
-        </a>
+    <!-- Shopping Cart Drawer -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2>Tu Carrito</h2>
+            <i class="fas fa-times close-cart" id="closeCart"></i>
+        </div>
+        <div class="cart-body" id="cartItems">
+            <!-- Items inner JS -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total Estimado</span>
+                <span id="cartTotal">S/ 0.00</span>
+            </div>
+            <button class="btn-whatsapp" id="checkoutBtn">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+            </button>
+        </div>
+    </div>
 
+    <main class="container fade-in" style="padding-top: 3rem;">
         <div class="detail-view" id="detailContainer">
             <!-- Los detalles se cargan dinámicamente -->
         </div>
+
+        <!-- Nueva Sección de Características y Especificaciones -->
+        <section class="product-extra-info">
+            <div class="info-tabs">
+                <button class="tab-btn active" data-tab="features">Características</button>
+                <button class="tab-btn" data-tab="specs">Especificaciones</button>
+            </div>
+
+            <div class="tab-content active" id="features">
+                <div class="features-grid" id="featuresList">
+                    <!-- JS cargará características aquí -->
+                </div>
+            </div>
+
+            <div class="tab-content" id="specs">
+                <div class="specs-container" id="specsTable">
+                    <!-- JS cargará tabla de especificaciones aquí -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h2>PLUMAS<span>1924</span></h2>
-                    <p>La elegancia en la escritura y el juego. Envíos exclusivos a todo el Perú.</p>
+                    <h2>DB<span>STORE</span></h2>
+                    <p>Tecnología, ergonomía y diversión premium.</p>
                 </div>
                 <div class="footer-col">
-                    <h3>Explorar</h3>
-                    <a href="index.html">Catálogo Completo</a>
-                    <a href="contacto.html">Contacto Directo</a>
+                    <h3>Atención</h3>
+                    <a href="index.html">Catálogo Online</a>
+                    <a href="contacto.html">Soporte Técnico</a>
                 </div>
                 <div class="footer-col">
-                    <h3>Legal</h3>
+                    <h3>Ayuda</h3>
                     <a href="privacidad.html">Privacidad</a>
-                    <a href="terminos.html">Términos de Servicio</a>
+                    <a href="terminos.html">Condiciones</a>
                 </div>
                 <div class="footer-col">
-                    <h3>Soporte</h3>
-                    <a href="https://wa.me/51992719569">WhatsApp Business</a>
-                    <a href="mailto:info@plumas1924.pe">info@plumas1924.pe</a>
+                    <h3>Contacto</h3>
+                    <a href="https://wa.me/51992719569?text=Hola%20DBStore%2C%20deseo%20realizar%20una%20consulta%20general."><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a href="mailto:dsaicoar@gmail.com"><i class="fas fa-envelope"></i> dsaicoar@gmail.com</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Plumas 1924 Perú. Todos los derechos reservados.</p>
+                <p>&copy; 2026 DBStore. Innovación Constante.</p>
             </div>
         </div>
     </footer>
